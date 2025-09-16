@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import OpenAI from "openai";
 import LoadingScreen from "@/components/LoadingScreen";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { MessageCircleWarning } from "lucide-react";
+import { useAnalysis } from "../../../providers/AnalysisContext";
+import { useRouter } from "next/navigation";
+import { auth0 } from "../../../lib/auth0";
 
 const openai = new OpenAI({
     apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY!,
@@ -12,6 +15,8 @@ const openai = new OpenAI({
 });
 
 export default function AnalysisPage() {
+  //  const session = await auth0.getSession();
+
     const [images, setImages] = useState<(File | null)[]>([
         null
     ]);
@@ -29,6 +34,23 @@ export default function AnalysisPage() {
 
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<string | null>(null);
+    const {setAnalysisResult} = useAnalysis(); 
+    const router = useRouter();
+
+    const [storedUser, setStoredUser] = useState<any>(null);
+
+    useEffect(() => {
+      // This runs only in the browser
+      const stored = localStorage.getItem("user");
+      console.log({stored});
+      if (stored) {
+        setStoredUser(JSON.parse(stored));
+      }
+    }, []);
+
+    // const userId = storedUser.id;
+    // console.log({userId});
+    
 
     async function compressToBase64(file: File, maxSize = 400): Promise<string> {
         return new Promise((resolve, reject) => {
@@ -92,11 +114,9 @@ export default function AnalysisPage() {
     const handleAnalyze = async () => {
         setLoading(true);
         setResult(null);
-
         const base64img = await compressToBase64(images[0]!, 400);
-
         const prompt = `
-            You are a dermatologist. Analyze the user's skin based on the 4 images and questionnaire.
+            You are a dermatologist. Analyze the user's skin based on the image and questionnaire.
             User profile:
             • Age: ${form.age}
             • Gender: ${form.gender}
@@ -112,8 +132,15 @@ export default function AnalysisPage() {
             {
                 'explanation': string,
                 'stepByStepPlan': {'day1': string, 'day2': string etc},
-                'recommendedProducts': string[]
+                'recommendedProducts': string[],
+                'thingsToAvoid': string,
+                'lifestyleHabitsToImplementOrChange': string,
+                'analysisSucceeded': boolean
             }
+
+            disclaimer - stepByStepPlan needs to contain 14 days. Each day needs to have tasks split into morning and afternoon. Return entries for each of the 14 days please, without any fillers.
+            disclaimer - Recommended should be specific (with manufacturer names and model names so I can later search for those products via amazon api)
+            disclaimer - The response MUST be a valid JSON object, and not include any comments such as '//'
             `;
 
         try {
@@ -121,7 +148,16 @@ export default function AnalysisPage() {
                 model: "gpt-3.5-turbo",
                 messages: [{ role: "user", content: prompt }],
             });
+
             setResult(response.choices[0].message.content || "No response");
+            setAnalysisResult(response.choices[0].message.content ?? "No response");
+            await fetch("/api/save-analysis", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId: storedUser.id, result: response.choices[0].message.content }),
+              });
+            router.push('/dashboard');
+
         } catch (err) {
             console.error(err);
             setResult("Error calling OpenAI");
@@ -250,8 +286,8 @@ export default function AnalysisPage() {
                 <button
                     disabled={!canAnalyze || loading}
                     onClick={handleAnalyze}
-                    className={`w-full p-3 bg-[#6a80c1] rounded-lg-lg font-semibold shadow-md ${canAnalyze
-                            ? "bg-black text-white"
+                    className={`w-full p-3 bg-[#BEB7A4] rounded-lg font-semibold shadow-md ${canAnalyze
+                            ? "bg-[#BEB7A4] text-white"
                             : "bg-gray-300 text-gray-500 cursor-not-allowed"
                         }`}
                 >

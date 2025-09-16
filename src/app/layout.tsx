@@ -13,6 +13,10 @@ import {
   NavigationMenuTrigger,
   NavigationMenuViewport,
 } from "@/components/ui/navigation-menu"
+import { AnalysisProvider } from "../../providers/AnalysisContext";
+import { UserProvider, useUserCtx} from "../../providers/UserContext";
+import { User } from "@auth0/nextjs-auth0/types";
+import Providers from "./Providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,9 +38,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth0.getSession();
+  const initialUser = session
+    ? { id: session.user.sub as string, email: session.user.email, name: session.user.name, picture: session.user.picture }
+    : null;
+
     return (
         <html lang="en">
-          <body>
+          <body className="custom-bg-landing">
             {/* <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
@@ -47,7 +56,12 @@ export default async function RootLayout({
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu> */}
-            {children}
+            <UserProvider initialUser={initialUser}>
+              <Providers />
+              <AnalysisProvider>
+                {children}
+              </AnalysisProvider>
+            </UserProvider>
             </body>
         </html>
     );
