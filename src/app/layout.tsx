@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { auth0 } from "../../lib/auth0";
+import { Inter } from 'next/font/google';
 
 import {
   NavigationMenu,
@@ -45,7 +46,7 @@ export default async function RootLayout({
 
     return (
         <html lang="en">
-          <body className="custom-bg-landing">
+          <body>
             {/* <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>

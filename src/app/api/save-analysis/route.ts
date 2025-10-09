@@ -9,6 +9,8 @@ export async function POST(req: NextRequest) {
     .insert({
       userId: body.userId,
       result: body.result,
+      image_base64: body.image_base64,
+      recommended_products: body.recommendedProducts
     });
 
   if (error) {

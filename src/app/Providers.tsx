@@ -27,7 +27,6 @@ export default function Providers() {
   useEffect(() => {
     const ensureUserCached = async () => {
       const stored = localStorage.getItem("user");
-        console.log(stored, user);
       if (!stored && user) {
         // use server-initialized user from context to repopulate storage
         localStorage.setItem("user", JSON.stringify(user));

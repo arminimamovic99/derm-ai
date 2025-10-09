@@ -1,11 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
+
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @custom-variant dark (&:is(.dark *));
+
+
+@theme {
+  --animate-flyAway: fly 0.5s ease-in-out;
+  @keyframes fly {
+    0% {
+      transform: translateY(0) translateX(0)
+    }
+    100% {
+      transform: translateY(-500px) translateX(500px)
+    }
+  }
+  --animate-wiggle: wiggle 0.5s ease-in-out infinite;
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: rotate(-5deg) translateY(3px);
+    }
+    50% {
+      transform: rotate(5deg) translateY(-3px);
+    }
+  }
+
+  --animate-float1: float1 15s ease-in-out infinite;
+  @keyframes float1 {
+    0%, 
+    100% { 
+        transform: translateX(0) translateY(0) scale(1) 
+    }
+    50% { 
+      transform: translateX(100px) translateY(50px) scale(1.15) 
+    }
+  }
+
+  --animate-float2: float2 15s ease-in-out infinite;
+  @keyframes float2 {
+    0%,
+    100% {
+      transform: translateY(O) translateX(0) scale(1)
+    }
+    50% {
+      transform: translateY(-40px) translateX(30px) scale(1.2)
+    }
+  }
+}
+
 
 @theme inline {
   --color-background: var(--background);
@@ -124,19 +172,24 @@
     @apply bg-background text-foreground;
   }
 }
+html, body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  letter-spacing:  -0.01em;
+}
 
 .custom-bg {
   background-color: #FFFBF7;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='717' height='86' viewBox='0 0 1000 120'%3E%3Cg fill='none' stroke='%23BEB7A4' stroke-width='4.5' stroke-opacity='0.34'%3E%3Cpath d='M-500 75c0 0 125-30 250-30S0 75 0 75s125 30 250 30s250-30 250-30s125-30 250-30s250 30 250 30s125 30 250 30s250-30 250-30'/%3E%3Cpath d='M-500 45c0 0 125-30 250-30S0 45 0 45s125 30 250 30s250-30 250-30s125-30 250-30s250 30 250 30s125 30 250 30s250-30 250-30'/%3E%3Cpath d='M-500 105c0 0 125-30 250-30S0 105 0 105s125 30 250 30s250-30 250-30s125-30 250-30s250 30 250 30s125 30 250 30s250-30 250-30'/%3E%3Cpath d='M-500 15c0 0 125-30 250-30S0 15 0 15s125 30 250 30s250-30 250-30s125-30 250-30s250 30 250 30s125 30 250 30s250-30 250-30'/%3E%3Cpath d='M-500-15c0 0 125-30 250-30S0-15 0-15s125 30 250 30s250-30 250-30s125-30 250-30s250 30 250 30s125 30 250 30s250-30 250-30'/%3E%3Cpath d='M-500 135c0 0 125-30 250-30S0 135 0 135s125 30 250 30s250-30 250-30s125-30 250-30s250 30 250 30s125 30 250 30s250-30 250-30'/%3E%3C/g%3E%3C/svg%3E");
 }
 
-.custom-bg-landing {
+/* .custom-bg-landing {
   background-color: #FFFFFC;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 100 100'%3E%3Crect x='0' y='0' width='27' height='27' fill-opacity='0.08' fill='%23BEB7A4'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 40px 40px;
   animation: pulse-bg 8s ease-in-out infinite;
-}
+} */
 
 @keyframes pulse-bg {
   0%, 100% {

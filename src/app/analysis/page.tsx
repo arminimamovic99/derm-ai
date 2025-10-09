@@ -2,20 +2,20 @@
 
 import { useEffect, useState } from "react";
 import OpenAI from "openai";
-import LoadingScreen from "@/components/LoadingScreen";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { MessageCircleWarning } from "lucide-react";
 import { useAnalysis } from "../../../providers/AnalysisContext";
 import { useRouter } from "next/navigation";
-import { auth0 } from "../../../lib/auth0";
+import { BeamAnimation } from "@/components/AnimatedBeam";
 
 const openai = new OpenAI({
     apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY!,
     dangerouslyAllowBrowser: true
 });
 
+const rapidapiKey = process.env.RAPIDAPI_KEY!;
+
 export default function AnalysisPage() {
-  //  const session = await auth0.getSession();
 
     const [images, setImages] = useState<(File | null)[]>([
         null
@@ -40,17 +40,11 @@ export default function AnalysisPage() {
     const [storedUser, setStoredUser] = useState<any>(null);
 
     useEffect(() => {
-      // This runs only in the browser
       const stored = localStorage.getItem("user");
-      console.log({stored});
       if (stored) {
         setStoredUser(JSON.parse(stored));
       }
     }, []);
-
-    // const userId = storedUser.id;
-    // console.log({userId});
-    
 
     async function compressToBase64(file: File, maxSize = 400): Promise<string> {
         return new Promise((resolve, reject) => {
@@ -116,32 +110,92 @@ export default function AnalysisPage() {
         setResult(null);
         const base64img = await compressToBase64(images[0]!, 400);
         const prompt = `
-            You are a dermatologist. Analyze the user's skin based on the image and questionnaire.
-            User profile:
-            • Age: ${form.age}
-            • Gender: ${form.gender}
-            • Skin type: ${form.skinType}
-            • Conditions: ${form.conditions}
-            • Lifestyle: ${form.lifestyle}
-            • Routine: ${form.routine}
+        Take into account the following disclaimers:
+        - stepByStepPlan must contain 14 days. Each day must have tasks split into morning and afternoon. Return entries for all 14 days, no placeholders or fillers.
+        - recommendedProducts must include "name", "manufacturer", "description", "imageQuery" (for searching the product online), and "imagePrompt" (a natural description of what the product looks like for potential AI image generation).
+        - Do NOT recommend any products that the user currently uses or mentioned in their current routine. Always suggest alternative or complementary products that align with their skin needs.
+        - The response MUST be a valid JSON object with no comments, markdown, or extra text.
+        
+        You are a dermatologist AI assistant. Analyze the user's skin based on the uploaded image and questionnaire.
+        
+        User profile:
+        • Age: ${form.age}
+        • Gender: ${form.gender}
+        • Skin type: ${form.skinType}
+        • Conditions: ${form.conditions}
+        • Lifestyle: ${form.lifestyle}
+        • Current routine: ${form.routine}
+        
+        Photo (base64, truncated for length):
+        ${base64img.substring(0, 10000)}
 
-            Photo (base64):
-            ${base64img.substring(0, 10000)}  --truncated--
+        For each detected skin attribute (hydration, acne, redness, texture, wrinkles), return approximate coordinates on the face where the issue is visually detected. 
 
-            Return the response in JSON please, like this:
+        Use normalized coordinates (x, y) with values between 0 and 1, representing the position on the photo (0 = left/top, 1 = right/bottom). Each coordinate should include a short description.
+
+        Include this in a field called "regionMap" where each key is one of the subscore categories and the value is an array of coordinate objects:
+        {
+            "x": number,
+            "y": number,
+            "description": string
+        }
+        
+        Scoring system:
+        - Each subscore (hydration, acne, redness, texture, wrinkles) must be an integer between 0 and 100.
+        - The overall "skinHealthScore" must be the average of all subscores, rounded to the nearest integer.
+        - Use this interpretation for all scores:
+          90–100: Excellent
+          75–89: Good
+          60–74: Fair
+          40–59: Poor
+          0–39: Critical
+        
+        Output requirements:
+        - Be specific and realistic in your explanations.
+        - For "scoreExplanation", describe in 1–2 sentences why the overall score is what it is.
+        - For "subScoreExplanations", explain each subscore in 1 sentence focusing on the visual or detected issues.
+        - "recommendedProducts" must only include products that would improve the user's current condition, NOT duplicates of their current routine, and must be products from known brands (e.g. CeraVe, Neutrogena, Balea etc.).
+        - "thingsToAvoid" should list habits or ingredients that could worsen their issues.
+        - "lifestyleHabitsToImplementOrChange" should list practical daily habits for better skin.
+        
+        You are an API that must return ONLY valid JSON.
+        - The JSON must be syntactically valid.
+        - Use double quotes for all keys and string values.
+        - Do not include comments, trailing commas, or any extra characters.
+        - Do not include explanations, markdown, or text outside of the JSON.
+        - The top-level object must match *exactly* this structure:
+        
+        {
+          "analysisSucceeded": boolean,
+          "skinHealthScore": number,
+          "subScores": {
+            "hydration": number,
+            "acne": number,
+            "redness": number,
+            "texture": number,
+            "wrinkles": number
+          },
+          "scoreExplanation": string,
+          "subScoreExplanations": {
+            "hydration": string,
+            "acne": string,
+            "redness": string,
+            "texture": string,
+            "wrinkles": string
+          },
+          "explanation": string,
+          "stepByStepPlan": [
             {
-                'explanation': string,
-                'stepByStepPlan': {'day1': string, 'day2': string etc},
-                'recommendedProducts': string[],
-                'thingsToAvoid': string,
-                'lifestyleHabitsToImplementOrChange': string,
-                'analysisSucceeded': boolean
+              "day": number,
+              "morning": string,
+              "afternoon": string
             }
-
-            disclaimer - stepByStepPlan needs to contain 14 days. Each day needs to have tasks split into morning and afternoon. Return entries for each of the 14 days please, without any fillers.
-            disclaimer - Recommended should be specific (with manufacturer names and model names so I can later search for those products via amazon api)
-            disclaimer - The response MUST be a valid JSON object, and not include any comments such as '//'
-            `;
+          ],
+          "recommendedProducts": string[],
+          "thingsToAvoid": string,
+          "lifestyleHabitsToImplementOrChange": string
+        }
+        `;          
 
         try {
             const response = await openai.chat.completions.create({
@@ -151,11 +205,59 @@ export default function AnalysisPage() {
 
             setResult(response.choices[0].message.content || "No response");
             setAnalysisResult(response.choices[0].message.content ?? "No response");
+
+            const parsed = JSON.parse(response.choices[0].message.content!);
+            const products = parsed.recommendedProducts;
+            
+            localStorage.setItem("result", response.choices[0].message.content ?? "");
+            
+            // Fetch product data for each recommended product in parallel
+            const productResponses = await Promise.all(
+              products.slice(0, 2).map(async (product: any) => {
+                try {
+                  const query = encodeURIComponent(product.name || product);
+                  const res = await fetch(
+                    `https://amazon-product-search-api1.p.rapidapi.com/search?q=${query}&country=us`,
+                    {
+                      method: "GET",
+                      headers: {
+                        "x-rapidapi-key": rapidapiKey,
+                        "x-rapidapi-host": "amazon-product-search-api1.p.rapidapi.com",
+                      },
+                    }
+                  );
+            
+                  const data = await res.json();
+                  const firstResult = data.results?.[0];
+            
+                  if (!firstResult) return null;
+            
+                  return {
+                    name: firstResult.name,
+                    image: firstResult.image,
+                    price: firstResult.original_price?.price_string || firstResult.price || "N/A",
+                    url: firstResult.url,
+                  };
+                } catch (error) {
+                  console.error(`Error fetching product: ${product.name}`, error);
+                  return null;
+                }
+              })
+            );
+            
+            // Filter out failed/null results
+            const productsToSave = productResponses.filter(Boolean);
+            
+            console.log("Fetched product data:", productsToSave);
+
+            const jsonProducts = JSON.stringify(productsToSave);
+
             await fetch("/api/save-analysis", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId: storedUser.id, result: response.choices[0].message.content }),
+                body: JSON.stringify({ userId: storedUser.id, result: response.choices[0].message.content, image_base64: base64img, recommendedProducts: jsonProducts }),
               });
+
             router.push('/dashboard');
 
         } catch (err) {
@@ -304,7 +406,10 @@ export default function AnalysisPage() {
     }
    if (loading) {
         return (
-            <LoadingScreen/>
+            // <LoadingScreen/>
+            <div className="w-[vw100] h-[vh100] flex justify-center items-center">
+                <BeamAnimation/>
+            </div>
         )
     }
 

@@ -1,12 +1,49 @@
-import { Sidebar, SidebarProvider } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarProvider } from "@/components/ui/sidebar";
 import "@/app/globals.css";
 import type { ReactNode } from "react";
+import { Archive, Cross, HandHeart, LayoutDashboard, NotebookPen } from "lucide-react";
+import Link from "next/link";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
     <div className="flex min-h-screen bg-background text-foreground w-full">
-      <Sidebar />
+      <Sidebar>
+        <div className="flex justify-center items-center px-6 py-5 gap-2">
+        {/* <Cross/> */}
+        {/* <p className="font-semibold text-3xl">Derm.AI</p> */}
+          <img src="/dermai_logo.png" className="w-36 h-16" alt="" />
+        </div>
+
+        <SidebarContent>
+            {/* Navigation */}
+            <nav className="flex flex-col gap-1 px-4 mt-4">
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted transition"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                Dashboard
+              </Link>
+
+              <Link
+                href="/archive"
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted transition"
+              >
+                <Archive className="w-4 h-4" />
+                Archive
+              </Link>
+
+              <Link 
+                href="/journal"                 
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted transition"
+              >
+                <NotebookPen className="w-4 h-4" />
+                Journal
+              </Link>
+            </nav>
+          </SidebarContent>
+      </Sidebar>
       <main className="flex-1 p-8">{children}</main>
     </div>
     </SidebarProvider>
