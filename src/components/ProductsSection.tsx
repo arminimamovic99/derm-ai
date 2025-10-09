@@ -22,23 +22,23 @@ export const ProductsSection = ({products}: ProductsSectionProps) => {
     }
 
     return (
-        <div className="self-start">
-            <div className="flex gap-2 items-center">
+        <div className="self-start mt-6">
+            <div className="flex gap-1 items-center">
+                <Popover>
+                    <PopoverTrigger>
+                        <Info className="mb-3"/>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                        <p className="font-light">
+                            <span className="font-semibold">AI-powered skincare shopping list 💫</span>
+                            <br />
+                            We picked these just for you, using your photo and quiz results.
+                            They target your skin’s top priorities — hydration, smoothness, and clarity.
+                        </p>
+                    </PopoverContent>
+                </Popover>
                 <h2 className='text-2xl mb-3 font-semibold'>Recommended products</h2>
             </div>
-            <Alert className="mb-3  bg-[#dbd8cd]">
-                <AlertTitle>
-                    <div className="flex items-center gap-2">
-                        <Info/>
-                        AI-powered skincare shopping list 💫
-                    </div>
-                </AlertTitle>
-                <AlertDescription>
-                        We picked these just for you, using your photo and quiz results.
-                        They target your skin’s top priorities — hydration, smoothness, and clarity.
-                </AlertDescription>
-            </Alert>
-
             <div className="w-full max-w-full overflow-hidden">
                 <Carousel>
                     <CarouselContent className="rounded-xl">
