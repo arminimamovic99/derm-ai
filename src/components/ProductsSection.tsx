@@ -10,7 +10,6 @@ import { Card, CardContent, CardHeader } from "./ui/card";
 import { RecommendedAmazonProduct } from "@/type";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Info } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 interface ProductsSectionProps {
     products: RecommendedAmazonProduct[]
@@ -43,22 +42,24 @@ export const ProductsSection = ({products}: ProductsSectionProps) => {
                 <Carousel>
                     <CarouselContent className="rounded-xl">
                         {
-                            products.map((p, i) => (
-                                <CarouselItem key={i} className="rounded-xl shadow-lg">
-                                    <Card className="rounded-xl shadow-lg hover:opacity-70 border-none cursor-pointer" onClick={() => goToProduct(p.url)}>
-                                        <CardHeader className="!p-0 mb-0 border-none">
-                                            <img src={p.image} alt="" className="w-full h-[350px] object-cover rounded-lg border-none" />
-                                        </CardHeader>
-                                        <CardContent className="flex items-center justify-center p-10 border bg-[#eeede6]">
-                                            <div className="flex gap-3 flex-col items-center justify-center">
-                                                <p className="max-w-[300px] truncate"> {p.name} </p>
-                                                <p className="text-xl font-semibold"> {p.price} </p>
-                                            </div>
+                            products ?
+                                products.map((p, i) => (
+                                    <CarouselItem key={i} className="rounded-xl shadow-lg">
+                                        <Card className="rounded-xl shadow-lg hover:opacity-70 border-none cursor-pointer" onClick={() => goToProduct(p.url)}>
+                                            <CardHeader className="!p-0 mb-0 border-none">
+                                                <img src={p.image} alt="" className="w-full h-[350px] object-cover rounded-lg border-none" />
+                                            </CardHeader>
+                                            <CardContent className="flex items-center justify-center p-10 border bg-[#eeede6]">
+                                                <div className="flex gap-3 flex-col items-center justify-center">
+                                                    <p className="max-w-[300px] truncate"> {p.name} </p>
+                                                    <p className="text-xl font-semibold"> {p.price} </p>
+                                                </div>
 
-                                        </CardContent>
-                                    </Card>
-                                </CarouselItem>
-                            ))
+                                            </CardContent>
+                                        </Card>
+                                    </CarouselItem>
+                                
+                                )) : ''
                         }
                     </CarouselContent>
                     <div className="flex justify-center gap-3 mt-3">

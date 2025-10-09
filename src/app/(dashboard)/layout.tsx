@@ -1,7 +1,7 @@
 import { Sidebar, SidebarContent, SidebarProvider } from "@/components/ui/sidebar";
 import "@/app/globals.css";
 import type { ReactNode } from "react";
-import { Archive, Cross, HandHeart, LayoutDashboard, NotebookPen } from "lucide-react";
+import { Archive, Cross, HandHeart, LayoutDashboard, NotebookPen, SmilePlus } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
@@ -40,6 +40,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               >
                 <NotebookPen className="w-4 h-4" />
                 Journal
+              </Link>
+              <Link href='/analysis'
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted transition"
+              >
+                <SmilePlus className="w-4 h-4"/>
+                New analysis
               </Link>
             </nav>
           </SidebarContent>

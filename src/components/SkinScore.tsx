@@ -84,7 +84,11 @@ export const SkinScore = ({score, subscores, scoreExplanation, subscoreExplanati
                                     <PopoverTrigger>
                                         <Info className="cursor-pointer" />
                                     </PopoverTrigger>
-                                    <PopoverContent> {Object.entries(subscoreExplanations).filter(([k, v]) => k === key).map(([key, value]) => value)} </PopoverContent>
+                                    {
+                                        subscoreExplanations ? 
+                                        <PopoverContent> {Object.entries(subscoreExplanations).filter(([k, v]) => k === key).map(([key, value]) => value)} </PopoverContent>
+                                        : ''
+                                    }
                                 </Popover>
                                 <span className="capitalize">{key}: </span>
                                 <span className="font-semibold" style={{ color: getColorBasedOnValue(value) }}>{value}</span>
