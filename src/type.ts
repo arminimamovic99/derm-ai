@@ -1,3 +1,12 @@
+export interface FullAnalysisRecord {
+  id: number
+  created_at: string
+  userId: string
+  result: string
+  image_base64: string
+  recommended_products: string
+}
+
 export interface AnalysisResult {
   explanation: string;
   stepByStepPlan: [

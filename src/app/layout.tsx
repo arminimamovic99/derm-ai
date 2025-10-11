@@ -2,21 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { auth0 } from "../../lib/auth0";
-import { Inter } from 'next/font/google';
-
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuIndicator,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuViewport,
-} from "@/components/ui/navigation-menu"
 import { AnalysisProvider } from "../../providers/AnalysisContext";
 import { UserProvider, useUserCtx} from "../../providers/UserContext";
-import { User } from "@auth0/nextjs-auth0/types";
 import Providers from "./Providers";
 
 const geistSans = Geist({

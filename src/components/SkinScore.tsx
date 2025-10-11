@@ -18,7 +18,7 @@ export const SkinScore = ({score, subscores, scoreExplanation, subscoreExplanati
             return '#F54927';
         }
         if (value > 50 &&  value <= 75) {
-            return '#ECF000';
+            return '#FFA500';
         }
         if (value > 75) {
             return '#4FA32F';
@@ -32,12 +32,12 @@ export const SkinScore = ({score, subscores, scoreExplanation, subscoreExplanati
         return 'stroke-gray-300';
       };
     
-    const circularProgressLabelClass = `text-3xl font-semibold text-[${getColorBasedOnValue(score)}]`;
+    const circularProgressLabelClass = `text-4xl font-semibold text-[${getColorBasedOnValue(score)}]`;
     return (
         <div className="w-full">
-            <h2 className='text-2xl mb-3 font-semibold'>Your skin health statistics</h2>
-            <div className="border border-2 rounded-lg p-6 gap-3 bg-[#f8f7f4]">
-                <Alert className="mb-4 bg-[#dbd8cd] mb-6">
+            <h2 className='text-2xl mb-5 font-semibold'>Your skin health statistics</h2>
+            <div className="shadow-md rounded-xl p-6 gap-3 bg-[#f8f7f4]">
+                <Alert className="mb-4 bg-[#eeede6] mb-6">
                   <AlertTitle className="font-semibold text-lg"> 🛎️ Quick heads up </AlertTitle>
                   <AlertDescription className="text-lg mt-2">
                     Your skin scores are calculated by AI analysis of your photo and questionnaire, 
@@ -48,7 +48,7 @@ export const SkinScore = ({score, subscores, scoreExplanation, subscoreExplanati
                 <div className="flex flex-col flex-wrap gap-5 justify-center items-center md:flex-row px-2 md:px-10 md:justify-between">
                     {
                         image ?
-                        <img src={image} className="w-[300px] h-[400px] object-cover rounded-xl shadow-lg" alt="" /> :
+                            <img src={image} className="w-[300px] h-[400px] object-cover rounded-xl shadow-lg" alt="" /> :
                         ''
                     }
                     <div className="self-start">
@@ -63,15 +63,15 @@ export const SkinScore = ({score, subscores, scoreExplanation, subscoreExplanati
                             </Popover>
                             <h3>Total score:</h3>
                         </div>
-                        <div className="w-[55%] flex">
+                        <div className="flex">
                             <CircularProgress
                                 value={score}
                                 size={350}
-                                strokeWidth={40}
+                                strokeWidth={35}
                                 showLabel
                                 labelClassName={circularProgressLabelClass}
-                                progressClassName="stroke-[#9b8d74]"
-                                className="stroke-gray-300 shadow-lg"
+                                progressClassName="stroke-[#beb7a4] shadow-xl"
+                                className="stroke-[#dbd8cd] shadow-xl"
                             />
                         </div>
                     </div>
@@ -79,7 +79,7 @@ export const SkinScore = ({score, subscores, scoreExplanation, subscoreExplanati
                         <h3 className='text-md'>Individual category scores:</h3>
                         <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
                             {Object.entries(subscores).map(([key, value], i) => (
-                            <div key={key} className="flex items-center gap-2 text-lg p-3 rounded-2xl my-2 bg-[#dbd8cd] shadow-lg">
+                            <div key={key} className="flex items-center gap-2 text-lg p-3 rounded-2xl my-2 bg-[#eeede6] shadow-xs">
                                 <Popover>
                                     <PopoverTrigger>
                                         <Info className="cursor-pointer" />
@@ -91,7 +91,7 @@ export const SkinScore = ({score, subscores, scoreExplanation, subscoreExplanati
                                     }
                                 </Popover>
                                 <span className="capitalize">{key}: </span>
-                                <span className="font-semibold" style={{ color: getColorBasedOnValue(value) }}>{value}</span>
+                                <span className="font-semibold text-black">{value}</span>
                             </div>
                             ))}
                         </div>
