@@ -1,5 +1,5 @@
 "use client"
-import { Info } from 'lucide-react';
+import { ChartNoAxesCombined, Info } from 'lucide-react';
 import { SkinSubScores, SubScoreExplanations  } from '../type';
 import { CircularProgress } from './CircularProgress';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
@@ -11,8 +11,9 @@ interface SkinScoreProps {
     scoreExplanation: string;
     subscoreExplanations: SubScoreExplanations;
     image?: string;
+    percentageIncrease?: number
   }
-export const SkinScore = ({score, subscores, scoreExplanation, subscoreExplanations, image}: SkinScoreProps) => {
+export const SkinScore = ({score, subscores, scoreExplanation, subscoreExplanations, image, percentageIncrease}: SkinScoreProps) => {
     const getColorBasedOnValue = (value: number) => {
         if (value > 0 && value <= 50) {
             return '#F54927';
@@ -37,7 +38,7 @@ export const SkinScore = ({score, subscores, scoreExplanation, subscoreExplanati
         <div className="w-full">
             <h2 className='text-2xl mb-5 font-semibold'>Your skin health statistics</h2>
             <div className="shadow-md rounded-xl p-6 gap-3 bg-[#f8f7f4]">
-                <Alert className="mb-4 bg-[#eeede6] mb-6">
+                <Alert className="mb-4 bg-[#eeede6]">
                   <AlertTitle className="font-semibold text-lg"> 🛎️ Quick heads up </AlertTitle>
                   <AlertDescription className="text-lg mt-2">
                     Your skin scores are calculated by AI analysis of your photo and questionnaire, 
@@ -63,16 +64,18 @@ export const SkinScore = ({score, subscores, scoreExplanation, subscoreExplanati
                             </Popover>
                             <h3>Total score:</h3>
                         </div>
-                        <div className="flex">
-                            <CircularProgress
-                                value={score}
-                                size={350}
-                                strokeWidth={35}
-                                showLabel
-                                labelClassName={circularProgressLabelClass}
-                                progressClassName="stroke-[#beb7a4] shadow-xl"
-                                className="stroke-[#dbd8cd] shadow-xl"
-                            />
+                        <div className="flex flex-col">
+                            <div className="flex">
+                                <CircularProgress
+                                    value={score}
+                                    size={350}
+                                    strokeWidth={35}
+                                    showLabel
+                                    labelClassName={circularProgressLabelClass}
+                                    progressClassName="stroke-[#beb7a4] shadow-xl"
+                                    className="stroke-[#dbd8cd] shadow-xl"
+                                />
+                            </div>
                         </div>
                     </div>
                     <div className="flex-col self-start">

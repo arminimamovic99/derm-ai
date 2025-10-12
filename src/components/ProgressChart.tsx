@@ -47,7 +47,7 @@ interface ProgressChartProps {
 
 export function ProgressChart({chartData}: ProgressChartProps) {
   return (
-    <div className="relative z-10 w-[500px] h-[400px] mt-6">
+    <div className="relative z-10 w-[100%] h-[400px] mt-6">
         <div className="flex items-center gap-2 mb-5">
             <Popover>
                 <PopoverTrigger><Info /></PopoverTrigger>

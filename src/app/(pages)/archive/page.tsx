@@ -1,14 +1,15 @@
 'use client';
 import { SkinScore } from "@/components/SkinScore";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogOverlay, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FullAnalysisRecord, SkinAnalysisResponse } from "@/type";
 import { CalendarClock } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 
 export default function ArchivePage() {
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
     const [allAnalyses, setAllAnalyses] = useState<FullAnalysisRecord[]>();
     const [selectedAnalysis, setSelectedAnalysis] = useState<FullAnalysisRecord>();
     const [selectedAnalysisResult, setSelectedAnalysisResult] = useState<SkinAnalysisResponse>();
@@ -79,7 +80,7 @@ export default function ArchivePage() {
             </Alert>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
               {
-                !loading ?
+                allAnalyses ?
                   allAnalyses?.map((analysis, index) => (
                     <div
                       key={index}
@@ -109,7 +110,6 @@ export default function ArchivePage() {
                   </>
               }
             </div>
-
             <Dialog open={!!selectedAnalysis} onOpenChange={() => setSelectedAnalysis(undefined)}>
               <DialogContent className="max-w-5xl w-full rounded-2xl">
                 <DialogHeader>

@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Info } from "lucide-react";
+import { ChartNoAxesCombined, Info } from "lucide-react";
 import { ProgressChart } from "@/components/ProgressChart";
 
 
@@ -26,6 +26,7 @@ export default function DashboardPage() {
     const [currentDay, setCurrentDay] = useState<number>(1);
     const [isDayPastPlan, setIsDayPastPlan] = useState<boolean>(false);
     const [analysisChartData, setAnalysisChartData] = useState<{score: number, date: string}[]>();
+    const [percentageIncrease, setPercentageIncrease] = useState<number>();
 
     const getDayString = (date: Date): string =>
       date.toLocaleDateString("en-US", {
@@ -138,8 +139,15 @@ export default function DashboardPage() {
             const allAnalysisScores = data.analyses.map((a: any) => ({
               score: JSON.parse(a.result).skinHealthScore,
               date: getDayString(new Date(a.created_at))
-            }))
+            }));
+
+            const prev = allAnalysisScores[allAnalysisScores.length - 2].score;
+            const current = allAnalysisScores[allAnalysisScores.length - 1].score;
   
+            if (current > prev) {
+              const increase = ((current - prev) / prev) * 100;
+              setPercentageIncrease(increase);
+            }
             setAnalysisChartData(allAnalysisScores);
           }
         } catch (err: any) {
@@ -184,9 +192,24 @@ export default function DashboardPage() {
                 </Alert>
                 : ''
               }
+                              {
+                    percentageIncrease ?
+                    <Alert className='!w-full mb-6 mt-3 bg-[#eeede6]'>
+                        <AlertTitle className="text-xl">
+                            <div className="flex items-center gap-2">
+                                <ChartNoAxesCombined className="!w-6 !h-6"/>
+                                Your skin is looking healthier — a {Math.ceil(percentageIncrease)}% improvement since your last scan!
+                            </div>
+                        </AlertTitle>
+                        <AlertDescription className="text-lg">
+                            <p>Keep up your routine and stay consistent for even better results.</p>
+                        </AlertDescription>
+                    </Alert>
+                    : ''
+                }
               <div className="flex flex-col md:flex-row gap-10 items-center">
                 <div className="self-start w-[70%]">
-                  <SkinScore image={image!} score={analysis?.skinHealthScore!} subscores={analysis?.subScores!} scoreExplanation={analysis?.scoreExplanation!} subscoreExplanations={analysis?.subScoreExplanations!} /> 
+                  <SkinScore image={image!} score={analysis?.skinHealthScore!} subscores={analysis?.subScores!} scoreExplanation={analysis?.scoreExplanation!} subscoreExplanations={analysis?.subScoreExplanations!} percentageIncrease={percentageIncrease} /> 
                   <div className="flex flex-col md:flex-row gap-6 items-start mt-6">
                     <div className="w-full">
                       <h2 className='text-2xl mb-5 font-semibold'>Advice & tips</h2>
