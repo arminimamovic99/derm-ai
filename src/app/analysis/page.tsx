@@ -198,7 +198,7 @@ export default function AnalysisPage() {
         `;          
 
         try {
-            const res = await fetch("/api/analyze", {
+            const res = await fetch("/api/proxy/analyze", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ prompt }),
@@ -218,13 +218,9 @@ export default function AnalysisPage() {
                 try {
                   const query = encodeURIComponent(product.name || product);
                   const res = await fetch(
-                    `/api/products?q=${query}`,
+                    `/api/proxy/products?q=${query}`,
                     {
-                      method: "GET",
-                    //   headers: {
-                    //     "x-rapidapi-key": rapidapiKey,
-                    //     "x-rapidapi-host": "amazon-product-search-api1.p.rapidapi.com",
-                    //   },
+                      method: "GET"
                     }
                   );
             
