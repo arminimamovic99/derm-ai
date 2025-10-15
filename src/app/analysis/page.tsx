@@ -198,10 +198,12 @@ export default function AnalysisPage() {
         `;          
 
         try {
-            const response = await openai.chat.completions.create({
-                model: "gpt-3.5-turbo",
-                messages: [{ role: "user", content: prompt }],
-            });
+            const res = await fetch("/api/analyze", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt }),
+              });
+            const response = await res.json();
 
             setResult(response.choices[0].message.content || "No response");
             setAnalysisResult(response.choices[0].message.content ?? "No response");
@@ -211,19 +213,18 @@ export default function AnalysisPage() {
             
             localStorage.setItem("result", response.choices[0].message.content ?? "");
             
-            // Fetch product data for each recommended product in parallel
             const productResponses = await Promise.all(
               products.slice(0, 2).map(async (product: any) => {
                 try {
                   const query = encodeURIComponent(product.name || product);
                   const res = await fetch(
-                    `https://amazon-product-search-api1.p.rapidapi.com/search?q=${query}&country=us`,
+                    `/api/products?q=${query}`,
                     {
                       method: "GET",
-                      headers: {
-                        "x-rapidapi-key": rapidapiKey,
-                        "x-rapidapi-host": "amazon-product-search-api1.p.rapidapi.com",
-                      },
+                    //   headers: {
+                    //     "x-rapidapi-key": rapidapiKey,
+                    //     "x-rapidapi-host": "amazon-product-search-api1.p.rapidapi.com",
+                    //   },
                     }
                   );
             

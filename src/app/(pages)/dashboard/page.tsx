@@ -12,6 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { ChartNoAxesCombined, Info } from "lucide-react";
 import { ProgressChart } from "@/components/ProgressChart";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 
 export default function DashboardPage() {
@@ -96,8 +97,6 @@ export default function DashboardPage() {
       const current = Math.min(daysSince + 1, 14);
       setCurrentDay(current);
 
-      console.log(analysis?.stepByStepPlan);
-
       const dayAfterPlan = analysis?.stepByStepPlan.length! + 1;
       if (currentDay >= dayAfterPlan) {
         setIsDayPastPlan(true);
@@ -106,7 +105,6 @@ export default function DashboardPage() {
         (p: StepPlanEntry) => p.day === current
       );
 
-      console.log({todaysPlan});
 
       if (todaysPlan) {
         setTodaysTasks(todaysPlan);
@@ -164,122 +162,124 @@ export default function DashboardPage() {
   
 
     return (
-      <div className="w-[100wv]">
-        <div className="w-full">
-          {
-            analysis ? 
-            <>
-              <div className="flex">
-                <h1 className="text-4xl font-semibold tracking-tight text-balance">Dashboard</h1>
-              </div>
-              <hr className="my-5" />
-              {
-                isDayPastPlan ? 
-                <Alert className="bg-[#eeede6] mb-5 text-lg">
-                  <AlertTitle className="font-semibold">
-                    <div className="flex gap-3 items-center">
-                    {/* <Info className="text-red"></Info> */}
-                    ❗
-                    Your skin’s ready for a new scan ✨
-                    </div>
-                  </AlertTitle>
-                  <AlertDescription>
-                    <div className="flex items-center gap-4 text-lg">
-                      A week has passed since your last analysis — let’s see how your skin is improving and update your personalized plan.
-                      <Button className="cursor-pointer transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110" onClick={goToAnalysis}>Start analysis</Button>
-                    </div>
-                  </AlertDescription>
-                </Alert>
-                : ''
-              }
-                              {
-                    percentageIncrease ?
-                    <Alert className='!w-full mb-6 mt-3 bg-[#eeede6]'>
-                        <AlertTitle className="text-xl">
-                            <div className="flex items-center gap-2">
-                                <ChartNoAxesCombined className="!w-6 !h-6"/>
-                                Your skin is looking healthier — a {Math.ceil(percentageIncrease)}% improvement since your last scan!
-                            </div>
-                        </AlertTitle>
-                        <AlertDescription className="text-lg">
-                            <p>Keep up your routine and stay consistent for even better results.</p>
-                        </AlertDescription>
-                    </Alert>
-                    : ''
-                }
-              <div className="flex flex-col md:flex-row gap-10 items-center">
-                <div className="self-start w-[70%]">
-                  <SkinScore image={image!} score={analysis?.skinHealthScore!} subscores={analysis?.subScores!} scoreExplanation={analysis?.scoreExplanation!} subscoreExplanations={analysis?.subScoreExplanations!} percentageIncrease={percentageIncrease} /> 
-                  <div className="flex flex-col md:flex-row gap-6 items-start mt-6">
-                    <div className="w-full">
-                      <h2 className='text-2xl mb-5 font-semibold'>Advice & tips</h2>
-                      <div className="shadow-md rounded-xl p-6 gap-3 bg-[#f8f7f4]">
-                          <div className="flex items-center gap-6">
-                            <div>
-                              <h2 className="text-xl mb-3 font-semibold"> 💡 Lifestyle habits to implement or change</h2>
-                              <p className="font-medium"> {analysis?.lifestyleHabitsToImplementOrChange} </p>
-                            </div>
-                            <div>
-                              <h2 className="text-xl mb-3 font-semibold"> ❌ Things to avoid</h2>
-                              <p className="font-medium"> {analysis?.thingsToAvoid} </p>
-                            </div>
-                          </div>
-                      </div>
-                    </div>
-                  </div>
+      <ProtectedRoute>
+        <div className="w-[100wv]">
+          <div className="w-full">
+            {
+              analysis ? 
+              <>
+                <div className="flex">
+                  <h1 className="text-4xl font-semibold tracking-tight text-balance">Dashboard</h1>
                 </div>
-                <div className="self-start w-[30%]">
-                  {
-                    todaysTasks ?
-                    <div>
-                    <h2 className='text-2xl mb-5 font-semibold'>Tasks for day { currentDay } - <span className="text-lg font-medium"> { getDayString(new Date()) } </span> </h2>
-                    <div className="m-2 shadow-md rounded-xl p-6 flex items-center gap-3 bg-[#f8f7f4]">
-                      <div className="px-6">
-                        <div className="flex justify-between items-center w-full">
-                            <div>
-                              <div className="flex items-center gap-5 my-2">
-                                <p className="text-lg font-medium"> <span className="font-semibold">🌞   Morning: </span> {todaysTasks?.morning} </p>
+                <hr className="my-5" />
+                {
+                  isDayPastPlan ? 
+                  <Alert className="bg-[#eeede6] mb-5 text-lg">
+                    <AlertTitle className="font-semibold">
+                      <div className="flex gap-3 items-center">
+                      {/* <Info className="text-red"></Info> */}
+                      ❗
+                      Your skin’s ready for a new scan ✨
+                      </div>
+                    </AlertTitle>
+                    <AlertDescription>
+                      <div className="flex items-center gap-4 text-lg">
+                        A week has passed since your last analysis — let’s see how your skin is improving and update your personalized plan.
+                        <Button className="cursor-pointer transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110" onClick={goToAnalysis}>Start analysis</Button>
+                      </div>
+                    </AlertDescription>
+                  </Alert>
+                  : ''
+                }
+                                {
+                      percentageIncrease ?
+                      <Alert className='!w-full mb-6 mt-3 bg-[#eeede6]'>
+                          <AlertTitle className="text-xl">
+                              <div className="flex items-center gap-2">
+                                  <ChartNoAxesCombined className="!w-6 !h-6"/>
+                                  Your skin is looking healthier — a {Math.ceil(percentageIncrease)}% improvement since your last scan!
                               </div>
-                              <hr />
-                              <div className="flex items-center gap-5 my-2">
-                                <p className="text-lg font-medium"> <span className="font-semibold">🌙  Afternoon: </span> {todaysTasks?.afternoon} </p>
+                          </AlertTitle>
+                          <AlertDescription className="text-lg">
+                              <p>Keep up your routine and stay consistent for even better results.</p>
+                          </AlertDescription>
+                      </Alert>
+                      : ''
+                  }
+                <div className="flex flex-col md:flex-row gap-10 items-center">
+                  <div className="self-start w-[70%]">
+                    <SkinScore image={image!} score={analysis?.skinHealthScore!} subscores={analysis?.subScores!} scoreExplanation={analysis?.scoreExplanation!} subscoreExplanations={analysis?.subScoreExplanations!} percentageIncrease={percentageIncrease} /> 
+                    <div className="flex flex-col md:flex-row gap-6 items-start mt-6">
+                      <div className="w-full">
+                        <h2 className='text-2xl mb-5 font-semibold'>Advice & tips</h2>
+                        <div className="shadow-md rounded-xl p-6 gap-3 bg-[#f8f7f4]">
+                            <div className="flex items-center gap-6">
+                              <div>
+                                <h2 className="text-xl mb-3 font-semibold"> 💡 Lifestyle habits to implement or change</h2>
+                                <p className="font-medium"> {analysis?.lifestyleHabitsToImplementOrChange} </p>
+                              </div>
+                              <div>
+                                <h2 className="text-xl mb-3 font-semibold"> ❌ Things to avoid</h2>
+                                <p className="font-medium"> {analysis?.thingsToAvoid} </p>
                               </div>
                             </div>
                         </div>
                       </div>
-                    </div> 
                     </div>
-                    : 
-                      ''
-
-                  }
-                  <div className="mt-3 w-full">
+                  </div>
+                  <div className="self-start w-[30%]">
                     {
-                      products ? 
-                      <ProductsSection products={products!}/>
+                      todaysTasks ?
+                      <div>
+                      <h2 className='text-2xl mb-5 font-semibold'>Tasks for day { currentDay } - <span className="text-lg font-medium"> { getDayString(new Date()) } </span> </h2>
+                      <div className="m-2 shadow-md rounded-xl p-6 flex items-center gap-3 bg-[#f8f7f4]">
+                        <div className="px-6">
+                          <div className="flex justify-between items-center w-full">
+                              <div>
+                                <div className="flex items-center gap-5 my-2">
+                                  <p className="text-lg font-medium"> <span className="font-semibold">🌞   Morning: </span> {todaysTasks?.morning} </p>
+                                </div>
+                                <hr />
+                                <div className="flex items-center gap-5 my-2">
+                                  <p className="text-lg font-medium"> <span className="font-semibold">🌙  Afternoon: </span> {todaysTasks?.afternoon} </p>
+                                </div>
+                              </div>
+                          </div>
+                        </div>
+                      </div> 
+                      </div>
+                      : 
+                        ''
+
+                    }
+                    <div className="mt-3 w-full">
+                      {
+                        products ? 
+                        <ProductsSection products={products!}/>
+                        : ''
+                      }
+                    </div>
+                  </div>
+                </div>
+                <div className="grid flex-1 scroll-mt-20 items-stretch gap-10 md:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:gap-10">
+                  <div className="themes-wrapper group relative flex flex-col overflow-hidden rounded-xl transition-all duration-200 ease-in-out hover:z-30">
+                    {
+                      analysisChartData ?
+                      <ProgressChart chartData={analysisChartData!} />
                       : ''
                     }
                   </div>
                 </div>
-              </div>
-              <div className="grid flex-1 scroll-mt-20 items-stretch gap-10 md:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:gap-10">
-                <div className="themes-wrapper group relative flex flex-col overflow-hidden rounded-xl transition-all duration-200 ease-in-out hover:z-30">
-                  {
-                    analysisChartData ?
-                    <ProgressChart chartData={analysisChartData!} />
-                    : ''
-                  }
-                </div>
-              </div>
-            </>
-            : 
-            <>
-              <Skeleton className="h-[20rem] my-2 w-full rounded-lg" />
-              <Skeleton className="h-[20rem] my-2 w-full rounded-lg" />
-            </>
-          }
+              </>
+              : 
+              <>
+                <Skeleton className="h-[20rem] my-2 w-full rounded-lg" />
+                <Skeleton className="h-[20rem] my-2 w-full rounded-lg" />
+              </>
+            }
+          </div>
         </div>
-      </div>
+      </ProtectedRoute>
     );
   }
   

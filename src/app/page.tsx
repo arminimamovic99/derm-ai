@@ -21,13 +21,13 @@ export default async function Home() {
   const session = await auth0.getSession();
   if (!session) { 
     return (
-      <main className="bg-[#2a2420] h-[100vh]">
+      <main className="bg-white h-[100vh]">
         <nav className="w-full px-36 py-4 flex items-center justify-between sticky top-0 bg-transparent z-50">
           <Link href="/" className="text-3xl font-bold text-[#eeede6]">
-            Derm.AI
+            <img src="/dermai_logo.png" className="w-36 h-16" alt="" />
           </Link>
-
-          <Button asChild className="mt-6 font-semibold bg-[#BEB7A4] text-lg rounded-xl p-5 shadow-md transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110">
+          
+          <Button asChild className="mt-6 font-semibold bg-black text-lg text-[#dbd8cd] rounded-xl p-5 shadow-md transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110">
             <Link href="/auth/login">Get started</Link>
           </Button>
         </nav>

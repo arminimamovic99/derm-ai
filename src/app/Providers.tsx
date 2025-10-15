@@ -18,7 +18,6 @@ export default function Providers() {
     } catch {
       localStorage.removeItem("user");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 2) On every route change/refresh:
@@ -78,5 +77,21 @@ export default function Providers() {
     return () => window.removeEventListener("storage", onStorage);
   }, [setUser]);
 
+  // 4) Always keep localStorage in sync with current user
+  useEffect(() => {
+    if (user) {
+      const stored = localStorage.getItem("user");
+      const parsed = stored ? JSON.parse(stored) : null;
+      if (!parsed || parsed.id !== user.id) {
+        // user changed (or first login) → update storage
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+    } else {
+      // user logged out → clear
+      localStorage.removeItem("user");
+    }
+  }, [user]);
+
   return null;
 }
+

@@ -5,6 +5,9 @@ import { Archive, Cross, HandHeart, LayoutDashboard, LogOut, NotebookPen, SmileP
 import Link from "next/link";
 
 export default function MainLayout({ children }: { children: ReactNode }) {
+  const clearStorage = () => {
+    localStorage.removeItem('user');
+  }
   return (
     <SidebarProvider>
     <div className="flex min-h-screen bg-background text-foreground w-full">
